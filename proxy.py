@@ -15,7 +15,7 @@ class ProxyFactory(WebSocketServerFactory):
 class ProxyProtocol(WebSocketServerProtocol):
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self.is_preview_client = False
 
     def onConnect(self, request):
@@ -31,9 +31,9 @@ class ProxyProtocol(WebSocketServerProtocol):
             self.factory.preview_clients.append(self)
 
     def onMessage(self, payload, isBinary):
-        print(f'forwarding message {payload.decode()}')
+        print(f'forwarding message {payload} {isBinary}')
         for client in self.factory.preview_clients:
-            client.sendMessage(payload, isBinary)
+            client.sendMessage(payload)
 
     def onClose(self, wasClean, code, reason):
         print(f'connection closed {reason}')
