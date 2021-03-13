@@ -8,8 +8,8 @@ from autobahn.twisted.websocket import (WebSocketServerProtocol,
 
 class ProxyFactory(WebSocketServerFactory):
 
-    def __init__(self, url):
-        super().__init__(url)
+    def __init__(self):
+        super().__init__()
         self.preview_clients = []
 
 class ProxyProtocol(WebSocketServerProtocol):
@@ -31,7 +31,8 @@ class ProxyProtocol(WebSocketServerProtocol):
             self.factory.preview_clients.append(self)
 
     def onMessage(self, payload, isBinary):
-        for client in self.factory.clients:
+        print(f'forwarding message {payload.decode()}')
+        for client in self.factory.preview_clients:
             client.sendMessage(payload, isBinary)
 
     def onClose(self, wasClean, code, reason):
@@ -39,9 +40,11 @@ class ProxyProtocol(WebSocketServerProtocol):
 
 
 if __name__ == '__main__':
+    log.startLogging(sys.stdout)
+
     factory = ProxyFactory()
     factory.protocol = ProxyProtocol
 
-    reactor.listenTCP(80, factory)
+    reactor.listenTCP(8000, factory)
     reactor.run()
 
