@@ -33,7 +33,8 @@ class ProxyProtocol(WebSocketServerProtocol):
     def onMessage(self, payload, isBinary):
         print(f'forwarding message {payload} {isBinary}')
         for client in self.factory.preview_clients:
-            client.sendMessage(payload)
+            if client.state != WebSocketProtocol.STATE_CLOSED:
+                client.sendMessage(payload)
 
     def onClose(self, wasClean, code, reason):
         print(f'connection closed {reason}')
